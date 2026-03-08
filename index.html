@@ -436,7 +436,7 @@ tbody tr:hover{background:#fafbfc}
 .combo-remain.ok{background:var(--p2l);color:var(--p2)}
 
 /* ===== LOGIN SCREEN ===== */
-#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0d1b2a 0%,#1b3a5c 60%,#0d1b2a 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow-y:auto}
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0d1b2a 0%,#1b3a5c 60%,#0d1b2a 100%);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow-y:auto}
 .lbox{background:#fff;border-radius:24px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 32px 80px rgba(0,0,0,.5)}
 .llogo{text-align:center;margin-bottom:24px}
 .llogo i{font-size:44px;color:var(--p);display:block;margin-bottom:10px}
@@ -1346,26 +1346,35 @@ async function doAuth(){
 
 async function enterApp(user){
   CURRENT_USER=user;
+  // ẨN LOGIN SCREEN NGAY LẬP TỨC — trước khi làm bất cứ thứ gì
+  const ls=document.getElementById('login-screen');
+  ls.style.cssText='display:none!important;pointer-events:none!important;z-index:-1!important;visibility:hidden!important';
+  
   const storeName=user.user_metadata?.store_name||user.email?.split('@')[0]||'Nhà Thuốc';
   document.getElementById('s-avatar').textContent=(storeName[0]||'U').toUpperCase();
   document.getElementById('s-email').textContent=user.email||'';
-  await loadUserCloud(user.id);
-  // Ẩn login, hiện app
-  const ls=document.getElementById('login-screen');
-  ls.style.display='none';
-  ls.style.pointerEvents='none';
-  ls.style.zIndex='-1';
+  
+  // Load cloud data với timeout 8s
+  try{
+    await Promise.race([
+      loadUserCloud(user.id),
+      new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))
+    ]);
+  }catch(e){
+    console.warn('Cloud load failed, using local:',e.message);
+    DB.load();
+    if(!DB.settings.categories)DB.settings.categories=[...DEFAULT_CATS];
+  }
+  
   document.getElementById('sname').textContent=DB.settings.name||storeName;
   document.getElementById('his-from').value=todayS().slice(0,7)+'-01';
   document.getElementById('his-to').value=todayS();
   renderDash();updateAlerts();
   setSyncState('ok');
-  // 24h session check
   setInterval(()=>{
     const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}');
     if(s.time&&Date.now()-s.time>SESSION_TTL)doLogout();
   },60000);
-  // Auto-sync every 60s
   setInterval(()=>{if(SUPA_CLIENT&&CURRENT_USER)saveUserCloud(CURRENT_USER.id);},60000);
 }
 
@@ -2783,15 +2792,12 @@ function tick(){document.getElementById('hdate').textContent=new Date().toLocale
 // STARTUP
 // ============================================================
 (async function startup(){
-  // Init Supabase (hard-coded credentials)
   initSupabase();
   setInterval(tick,1000);tick();
 
   if(!SUPA_CLIENT){
-    // Fallback: just load local data and show app without login
-    if(!DB.load())initSample();
+    DB.load();
     if(!DB.settings.categories)DB.settings.categories=[...DEFAULT_CATS];
-    document.getElementById('login-screen').style.display='none';
     document.getElementById('sname').textContent=DB.settings.name||'Nhà Thuốc';
     document.getElementById('his-from').value=todayS().slice(0,7)+'-01';
     document.getElementById('his-to').value=todayS();
@@ -2799,24 +2805,30 @@ function tick(){document.getElementById('hdate').textContent=new Date().toLocale
     return;
   }
 
-  // Try restore existing Supabase session (auto-login)
-  const {data:{session}}=await SUPA_CLIENT.auth.getSession();
-  if(session?.user){
-    // Check 24h TTL
-    const saved=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}');
-    if(!saved.time||Date.now()-saved.time<SESSION_TTL){
-      // Refresh session time
-      localStorage.setItem(SESSION_KEY,JSON.stringify({uid:session.user.id,time:saved.time||Date.now()}));
-      await enterApp(session.user);
-      return;
+  try{
+    // Timeout 5s cho getSession
+    const result=await Promise.race([
+      SUPA_CLIENT.auth.getSession(),
+      new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),5000))
+    ]);
+    const session=result?.data?.session;
+    if(session?.user){
+      const saved=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}');
+      if(!saved.time||Date.now()-saved.time<SESSION_TTL){
+        localStorage.setItem(SESSION_KEY,JSON.stringify({uid:session.user.id,time:saved.time||Date.now()}));
+        await enterApp(session.user);
+        return;
+      }
+      await SUPA_CLIENT.auth.signOut().catch(()=>{});
+      localStorage.removeItem(SESSION_KEY);
     }
-    // Expired — logout silently
-    await SUPA_CLIENT.auth.signOut().catch(()=>{});
-    localStorage.removeItem(SESSION_KEY);
+  }catch(e){
+    console.warn('Session check failed:',e.message);
   }
 
-  // Show login screen
-  document.getElementById('login-screen').style.display='flex';
+  // Hiện login screen
+  const ls=document.getElementById('login-screen');
+  ls.style.cssText='display:flex!important;pointer-events:auto!important;z-index:9999!important;visibility:visible!important';
 })();
 </script>
 </body>
