@@ -807,9 +807,9 @@ tbody tr:hover{background:#fafbfc}
               </label>
             </div>
             <div class="fg" style="margin-bottom:8px">
-              <label class="fl">Google Gemini API Key <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:10px;color:var(--p);font-weight:400;margin-left:6px"><i class="fa fa-external-link"></i> Lấy key miễn phí</a></label>
+              <label class="fl">OpenRouter API Key <a href="https://openrouter.ai/keys" target="_blank" style="font-size:10px;color:var(--p);font-weight:400;margin-left:6px"><i class="fa fa-external-link"></i> Lấy key miễn phí</a></label>
               <div style="display:flex;gap:6px">
-                <input type="password" class="fc" id="s-ai-key" placeholder="AIzaSy..." style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px" autocomplete="off">
+                <input type="password" class="fc" id="s-ai-key" placeholder="sk-or-v1-..." style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px" autocomplete="off">
                 <button class="btn btn-p btn-sm" onclick="saveAiKey()" style="flex-shrink:0"><i class="fa fa-save"></i> Lưu</button>
               </div>
             </div>
@@ -2194,12 +2194,12 @@ function saveAiToggle(val){
 function saveAiKey(){
   const k=document.getElementById('s-ai-key').value.trim();
   if(!k){notify('Nhập API key!','e');return;}
-  if(!k.startsWith('AIza')){notify('Key không đúng định dạng Gemini (phải bắt đầu bằng AIza...)','e');return;}
+  if(!k.startsWith('sk-or-')){notify('Key không đúng định dạng OpenRouter (phải bắt đầu bằng sk-or-...)','e');return;}
   setAiKey(k);
   document.getElementById('s-ai-key').value='';
   const status=document.getElementById('ai-key-status');
-  status.innerHTML=`<i class="fa fa-check-circle" style="color:var(--p2)"></i> Gemini key đã lưu: <span style="font-family:monospace">${k.slice(0,10)}...${k.slice(-4)}</span>`;
-  notify('Đã lưu Gemini API key!','s');
+  status.innerHTML=`<i class="fa fa-check-circle" style="color:var(--p2)"></i> OpenRouter key đã lưu: <span style="font-family:monospace">${k.slice(0,12)}...${k.slice(-4)}</span>`;
+  notify('Đã lưu OpenRouter API key!','s');
 }
 
 // ============================================================
@@ -2403,17 +2403,23 @@ function setAiKey(k){localStorage.setItem('pc_aikey',k.trim());}
 async function callAI(prompt,maxTokens=400){
   const apiKey=getAiKey();
   if(!apiKey)throw new Error('NO_KEY');
-  const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,{
+  const resp=await fetch('https://openrouter.ai/api/v1/chat/completions',{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+apiKey,
+      'HTTP-Referer':'https://huychu1122.github.io/pharmacare/',
+      'X-Title':'PharmaCare Pro'
+    },
     body:JSON.stringify({
-      contents:[{parts:[{text:prompt}]}],
-      generationConfig:{maxOutputTokens:maxTokens,temperature:0.4}
+      model:'meta-llama/llama-3.2-3b-instruct:free',
+      max_tokens:maxTokens,
+      messages:[{role:'user',content:prompt}]
     })
   });
   const data=await resp.json();
-  if(data.error)throw new Error(data.error.message||'Gemini API error');
-  return(data.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+  if(data.error)throw new Error(data.error.message||'API error');
+  return(data.choices?.[0]?.message?.content||'').trim();
 }
 
 // ============================================================
@@ -2430,7 +2436,7 @@ async function showPosAiSuggest(drug){
   const cacheKey=drug.id;
   if(_aiPosCache[cacheKey]){textEl.innerHTML=_aiPosCache[cacheKey];return;}
   if(!getAiKey()){
-    textEl.innerHTML='🔑 Chưa có Gemini API key. Vào <b>Cài đặt → API Key AI</b> để thêm.<br><small style="color:#9f7aea">Miễn phí tại aistudio.google.com</small>';
+    textEl.innerHTML='🔑 Chưa có API key. Vào <b>Cài đặt → API Key AI</b> để thêm.<br><small style="color:#9f7aea">Miễn phí tại openrouter.ai</small>';
     return;
   }
   try{
@@ -2467,7 +2473,7 @@ async function triggerAiDrugModal(){
   if(_aiModalCache[key]){loading.style.display='none';textEl.style.display='block';textEl.innerHTML=_aiModalCache[key];return;}
   if(!getAiKey()){
     loading.style.display='none';textEl.style.display='block';
-    textEl.innerHTML='🔑 Chưa có Gemini key. Vào <b>Cài đặt → API Key AI</b>.';
+    textEl.innerHTML='🔑 Chưa có API key. Vào <b>Cài đặt → API Key AI</b>.';
     return;
   }
   try{
