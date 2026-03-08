@@ -1359,6 +1359,7 @@ async function doAuth(){
   if(errEl)errEl.classList.remove('show');
   if(!email||!pass){showLErr('Nhập email và mật khẩu!');return;}
   if(pass.length<6){showLErr('Mật khẩu tối thiểu 6 ký tự!');return;}
+  if(!SUPA_CLIENT){showLErr('Lỗi kết nối Supabase! Tải lại trang và thử lại.');return;}
   document.getElementById('l-auth-btn').style.display='none';
   document.getElementById('l-load').style.display='block';
   try{
@@ -1378,16 +1379,20 @@ async function doAuth(){
       if(res.error)throw res.error;
     }
     const user=res.data.session?.user||res.data.user;
+    if(!user){showLErr('Không lấy được thông tin user!');return;}
     localStorage.setItem(SESSION_KEY,JSON.stringify({uid:user.id,time:Date.now()}));
     await enterApp(user);
   }catch(e){
+    console.error('Auth error:',e);
     document.getElementById('l-load').style.display='none';
     document.getElementById('l-auth-btn').style.display='block';
-    const m=e.message||'';
+    const m=e.message||e.error_description||JSON.stringify(e)||'';
     showLErr(
-      m.includes('Invalid')||m.includes('credentials')?'Email hoặc mật khẩu không đúng!':
-      m.includes('already')?'Email đã tồn tại!':
-      m||'Đăng nhập thất bại!'
+      m.includes('Invalid')||m.includes('credentials')||m.includes('password')?'Email hoặc mật khẩu không đúng!':
+      m.includes('already')||m.includes('registered')?'Email đã tồn tại!':
+      m.includes('confirm')||m.includes('verified')?'Cần xác nhận email trước!':
+      m.includes('network')||m.includes('fetch')?'Lỗi mạng, kiểm tra kết nối internet!':
+      'Lỗi: '+m
     );
   }
 }
