@@ -345,131 +345,69 @@ tbody tr:hover{background:#fafbfc}
 @media(max-width:960px){.pos-wrap{grid-template-columns:1fr;height:auto}}
 @media print{#sidebar,#hdr,#notifs,.no-print{display:none!important}body{background:#fff}#content{padding:0}.inv-print{border:none;max-width:100%}}
 
-/* ===== MOBILE NAV ===== */
-#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#0d1b2a;border-top:1px solid rgba(255,255,255,.1);z-index:200;padding-bottom:env(safe-area-inset-bottom)}
-.mob-nav-items{display:flex;align-items:stretch;height:58px}
-.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 2px;color:rgba(255,255,255,.4);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;cursor:pointer;border:none;background:none;gap:3px;-webkit-tap-highlight-color:transparent;position:relative;transition:color .15s}
-.mob-nav-item i{font-size:21px}
+/* ===== MOBILE ===== */
+#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:#0d1b2a;border-top:1px solid rgba(255,255,255,.12)}
+.mob-nav-items{display:flex;height:56px;padding-bottom:env(safe-area-inset-bottom)}
+.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:rgba(255,255,255,.4);font-size:9px;font-weight:700;text-transform:uppercase;border:none;background:none;-webkit-tap-highlight-color:transparent}
+.mob-nav-item i{font-size:20px}
 .mob-nav-item.active{color:#4f8ef7}
-
-/* More drawer */
-#mob-more-overlay{display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.55);backdrop-filter:blur(3px)}
-#mob-more-overlay.show{display:block}
-#mob-more-drawer{position:fixed;bottom:0;left:0;right:0;background:#162538;border-radius:22px 22px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -8px 40px rgba(0,0,0,.5)}
+#mob-more-drawer{position:fixed;bottom:0;left:0;right:0;background:#162538;border-radius:20px 20px 0 0;z-index:200;transform:translateY(100%);transition:transform .28s ease;padding-bottom:env(safe-area-inset-bottom)}
 #mob-more-drawer.open{transform:translateY(0)}
-.mob-drawer-bar{width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:99px;margin:14px auto 8px}
-.mob-drawer-grid{display:grid;grid-template-columns:repeat(4,1fr);padding:4px 0 20px}
-.mob-drawer-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 6px 12px;color:rgba(255,255,255,.8);font-size:11px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:14px;margin:4px;transition:background .12s}
-.mob-drawer-item:active{background:rgba(79,142,247,.15)}
-.mob-drawer-item i{font-size:26px;color:#4f8ef7}
-
-/* Mobile sidebar overlay */
+.mob-drawer-bar{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:99px;margin:12px auto 8px}
+.mob-drawer-grid{display:grid;grid-template-columns:repeat(4,1fr);padding:4px 0 16px}
+.mob-drawer-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 4px;color:rgba(255,255,255,.8);font-size:11px;font-weight:600;-webkit-tap-highlight-color:transparent}
+.mob-drawer-item i{font-size:24px;color:#4f8ef7}
+#mob-drawer-bg{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.45)}
 #mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:149}
-#mob-ham{display:none;background:none;border:none;color:#fff;font-size:20px;padding:10px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-
-/* ===== CART FAB (POS only) ===== */
-#mob-cart-fab{
-  display:none;position:fixed;
-  bottom:calc(70px + env(safe-area-inset-bottom));right:14px;
-  z-index:91;
-  background:linear-gradient(135deg,#1d6fe8 0%,#7c3aed 100%);
-  color:#fff;border:none;border-radius:22px;
-  min-width:60px;height:56px;padding:0 16px 0 12px;
-  font-weight:700;box-shadow:0 6px 24px rgba(29,111,232,.5);
-  align-items:center;justify-content:center;gap:8px;
-  -webkit-tap-highlight-color:transparent;cursor:pointer;
-  transition:transform .12s,box-shadow .12s;
-}
-#mob-cart-fab:active{transform:scale(.95);box-shadow:0 3px 12px rgba(29,111,232,.4)}
-#mob-cart-fab .fab-icon{position:relative;font-size:22px}
-#mob-cart-fab .fab-badge{
-  position:absolute;top:-7px;right:-7px;
-  background:#ef4444;color:#fff;border-radius:99px;
-  min-width:18px;height:18px;font-size:10px;font-weight:800;
-  display:none;align-items:center;justify-content:center;padding:0 4px;
-  border:2px solid #fff
-}
-#mob-cart-fab .fab-info{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
-#mob-cart-fab .fab-total{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace}
-#mob-cart-fab .fab-lbl{font-size:9px;opacity:.75;text-transform:uppercase;letter-spacing:.5px}
-
-/* Old cart btn - hide */
+#mob-ham{display:none;background:none;border:none;color:#fff;font-size:20px;padding:8px 12px;-webkit-tap-highlight-color:transparent}
+#mob-cart-fab{display:none;position:fixed;bottom:calc(60px + env(safe-area-inset-bottom));right:14px;z-index:90;background:linear-gradient(135deg,#1d6fe8,#7c3aed);color:#fff;border:none;border-radius:20px;height:52px;padding:0 16px 0 12px;align-items:center;gap:8px;font-weight:700;box-shadow:0 6px 20px rgba(29,111,232,.4);-webkit-tap-highlight-color:transparent}
+#mob-cart-fab .fab-icon{position:relative;font-size:20px}
+#mob-cart-fab .fab-badge{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:99px;min-width:17px;height:17px;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 3px}
+#mob-cart-fab .fab-total{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace}
+#mob-cart-fab .fab-lbl{font-size:9px;opacity:.7;text-transform:uppercase}
 #mob-cart-btn{display:none!important}
-
-@media(max-width:768px){
-  :root{--hh:52px}
-  body{flex-direction:column;overflow:hidden;height:100dvh;height:100svh}
-  #sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%);transition:transform .25s ease;width:min(280px,85vw)!important;height:100%}
-  #sidebar.mob-open{transform:translateX(0)}
-  #mob-overlay{display:none;opacity:0;pointer-events:none;transition:opacity .25s}
-  #mob-overlay.show{display:block;opacity:1;pointer-events:auto}
-  #mob-ham{display:block}
-  #mob-nav{display:block}
-  #main{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
-  #hdr{flex-shrink:0;height:var(--hh);z-index:10}
-  #hdr-search{display:none}
-  #content{
-    flex:1;
-    min-height:0;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-y:contain;
-    padding:8px 10px calc(70px + env(safe-area-inset-bottom));
-    padding-top:calc(var(--hh) + 8px);
-    position:relative;
-    z-index:1;
-  }
-  /* POS - full width drug grid, hide desktop cart */
-  .pos-wrap{grid-template-columns:1fr!important;gap:10px}
-  .pos-r{display:none!important}
-  #mob-cart-fab{display:flex}
-  /* Drug grid 2 cols */
-  .dgrid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
-  .dcard{padding:8px 6px!important}
-  .dcard-img{height:64px!important}
-  .dcard-name{font-size:11px!important}
-  .dcard-price{font-size:12px!important}
-  /* Layouts */
-  .sg{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
-  .g2{grid-template-columns:1fr!important}
-  .fr,.fr3,.fr4{flex-direction:column!important;gap:8px!important}
-  /* Tables horizontal scroll */
-  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .tw table{min-width:520px;font-size:12px}
-  .tw th,.tw td{white-space:nowrap}
-  /* Modals bottom sheet */
-  .mover{align-items:flex-end!important;padding:0!important}
-  .modal{border-radius:20px 20px 0 0!important;max-height:94dvh!important;width:100%!important;max-width:100%!important;margin:0!important}
-  .mb{max-height:calc(94dvh - 130px)!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  /* Prevent iOS input zoom */
-  input,select,textarea{font-size:16px!important}
-  .btn{min-height:44px}
-  .btn-sm{min-height:38px!important;font-size:12px!important}
-  h2{font-size:17px!important}
-  .hide-mob{display:none!important}
-  .hdate{display:none!important}
-  .htitle small{display:none}
-  #notifs{bottom:calc(68px + env(safe-area-inset-bottom))!important;right:10px!important;left:10px;max-width:none}
-  #sync-dot{display:flex}
-  .tnav{flex-wrap:wrap!important;gap:4px!important}
-  .tb{font-size:11px!important;padding:6px 10px!important}
-  #login-screen{align-items:flex-start;padding-top:40px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  canvas{max-height:180px!important}
-  #page-settings .g2{grid-template-columns:1fr!important}
-  .combo-split{grid-template-columns:1fr!important}
-  .pos-l{overflow:visible!important}
-}
-@media(max-width:400px){
-  .sg{grid-template-columns:1fr!important}
-}
-
-/* Sync indicator */
 #sync-dot{display:none;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.6);margin-left:auto;margin-right:10px;flex-shrink:0}
 #sync-dot .dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0}
 #sync-dot.syncing .dot{background:var(--warn);animation:pulse 1s infinite}
 #sync-dot.error .dot{background:var(--err)}
 .supa-setup{background:#fff;border-radius:16px;padding:24px;max-width:480px;margin:auto;box-shadow:var(--shl)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:768px){
+  :root{--hh:50px}
+  body{flex-direction:column;height:100svh;overflow:hidden}
+  #sidebar{position:fixed;left:0;top:0;height:100%;width:min(280px,85vw)!important;z-index:150;transform:translateX(-100%);transition:transform .25s ease}
+  #sidebar.mob-open{transform:translateX(0)}
+  #mob-overlay.show{display:block}
+  #mob-ham{display:block}
+  #mob-nav{display:block}
+  #hdr{height:var(--hh);flex-shrink:0}
+  #hdr-search,.hdate,.hide-mob{display:none!important}
+  .htitle small{display:none}
+  #main{flex:1;display:flex;flex-direction:column;min-height:0}
+  #content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--hh) + 8px) 10px calc(60px + env(safe-area-inset-bottom))}
+  .pos-wrap{display:block!important}
+  .pos-r,.pos-right{display:none!important}
+  #mob-cart-fab{display:flex}
+  .dgrid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  .dcard{padding:8px 6px!important}.dcard-img{height:64px!important}.dcard-name{font-size:11px!important}.dcard-price{font-size:12px!important}
+  .sg{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  .g2{display:block!important}.g2>*{margin-bottom:10px}
+  .fr,.fr3,.fr4{flex-wrap:wrap!important}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}.tw table{min-width:500px;font-size:12px}
+  .mover{align-items:flex-end!important;padding:0!important}
+  .modal{border-radius:20px 20px 0 0!important;max-height:93svh!important;width:100%!important;max-width:100%!important;margin:0!important}
+  .mb{max-height:calc(93svh - 130px)!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  input,select,textarea{font-size:16px!important}
+  .btn{min-height:44px}.btn-sm{min-height:38px!important;font-size:12px!important}
+  h2{font-size:17px!important}
+  #notifs{bottom:calc(60px + env(safe-area-inset-bottom));right:10px;left:10px}
+  #sync-dot{display:flex}
+  .tnav{flex-wrap:wrap!important;gap:4px!important}.tb{font-size:11px!important;padding:6px 10px!important}
+  canvas{max-height:180px!important}
+  .pos-l{overflow:visible!important}
+  #login-screen{padding-top:40px;justify-content:flex-start}
+}
+@media(max-width:400px){.sg{grid-template-columns:1fr!important}}50%{opacity:.4}}
 
 /* BARCODE LABEL */
 .label-sheet{display:flex;flex-wrap:wrap;gap:8px;padding:10px}
@@ -938,16 +876,16 @@ tbody tr:hover{background:#fafbfc}
   </div><!-- /content -->
 </div><!-- /main -->
 
-<!-- Mobile more overlay -->
-<div id="mob-more-overlay" onclick="closeMobMore()"></div>
+<!-- Drawer backdrop -->
+<div id="mob-drawer-bg" onclick="closeMobMore()"></div>
 <!-- More drawer -->
 <div id="mob-more-drawer">
-  <div class="mob-drawer-bar"></div>
+  <div class="mob-drawer-bar" onclick="closeMobMore()"></div>
   <div class="mob-drawer-grid">
     <div class="mob-drawer-item" onclick="mobNavTo('history')"><i class="fa fa-receipt"></i>Lịch sử</div>
-    <div class="mob-drawer-item" onclick="mobNavTo('drugs')"><i class="fa fa-capsules"></i>Danh sách thuốc</div>
+    <div class="mob-drawer-item" onclick="mobNavTo('drugs')"><i class="fa fa-capsules"></i>Thuốc</div>
     <div class="mob-drawer-item" onclick="mobNavTo('customers')"><i class="fa fa-users"></i>Khách hàng</div>
-    <div class="mob-drawer-item" onclick="mobNavTo('suppliers')"><i class="fa fa-building"></i>Nhà cung cấp</div>
+    <div class="mob-drawer-item" onclick="mobNavTo('suppliers')"><i class="fa fa-building"></i>Nhà CC</div>
     <div class="mob-drawer-item" onclick="mobNavTo('stats')"><i class="fa fa-bar-chart"></i>Thống kê</div>
     <div class="mob-drawer-item" onclick="mobNavTo('settings')"><i class="fa fa-gear"></i>Cài đặt</div>
     <div class="mob-drawer-item" onclick="exportBackup();closeMobMore()"><i class="fa fa-download"></i>Backup</div>
@@ -955,19 +893,19 @@ tbody tr:hover{background:#fafbfc}
   </div>
 </div>
 
-<!-- Cart FAB (POS page only) -->
+<!-- Cart FAB -->
 <button id="mob-cart-fab" onclick="mobCartFabClick()">
   <div class="fab-icon">
     <i class="fa fa-cart-shopping"></i>
     <span class="fab-badge" id="mob-fab-badge">0</span>
   </div>
-  <div class="fab-info">
+  <div style="display:flex;flex-direction:column;align-items:flex-start">
     <span class="fab-total" id="mob-fab-total">0đ</span>
     <span class="fab-lbl">Thanh toán</span>
   </div>
 </button>
 
-<!-- MOBILE BOTTOM NAV -->
+<!-- BOTTOM NAV -->
 <nav id="mob-nav">
   <div class="mob-nav-items">
     <button class="mob-nav-item active" onclick="mobNav('dashboard')" id="mn-dashboard"><i class="fa fa-home"></i>Tổng quan</button>
@@ -1640,11 +1578,11 @@ function mobNavTo(page){
 
 function openMobMore(){
   document.getElementById('mob-more-drawer').classList.add('open');
-  document.getElementById('mob-more-overlay').classList.add('show');
+  document.getElementById('mob-drawer-bg').style.display='block';
 }
 function closeMobMore(){
   document.getElementById('mob-more-drawer').classList.remove('open');
-  document.getElementById('mob-more-overlay').classList.remove('show');
+  document.getElementById('mob-drawer-bg').style.display='none';
 }
 
 function mobCartFabClick(){
