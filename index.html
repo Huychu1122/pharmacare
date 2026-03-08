@@ -398,67 +398,66 @@ tbody tr:hover{background:#fafbfc}
 
 @media(max-width:768px){
   :root{--hh:52px}
-  body{flex-direction:column;overflow:hidden;height:100dvh}
-  #sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%);transition:transform .25s ease;width:min(280px,85vw)!important;height:100dvh}
+  body{flex-direction:column;overflow:hidden;height:100dvh;height:100svh}
+  #sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%);transition:transform .25s ease;width:min(280px,85vw)!important;height:100%}
   #sidebar.mob-open{transform:translateX(0)}
-  #mob-overlay{display:block;opacity:0;pointer-events:none;transition:opacity .25s}
-  #mob-overlay.show{opacity:1;pointer-events:auto}
+  #mob-overlay{display:none;opacity:0;pointer-events:none;transition:opacity .25s}
+  #mob-overlay.show{display:block;opacity:1;pointer-events:auto}
   #mob-ham{display:block}
   #mob-nav{display:block}
-  #main{flex:1;display:flex;flex-direction:column;overflow:hidden;height:100dvh}
-  #hdr{flex-shrink:0;height:var(--hh)}
+  #main{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+  #hdr{flex-shrink:0;height:var(--hh);z-index:10}
   #hdr-search{display:none}
   #content{
     flex:1;
+    min-height:0;
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
     overscroll-behavior-y:contain;
-    padding:8px 10px calc(66px + env(safe-area-inset-bottom));
+    padding:8px 10px calc(70px + env(safe-area-inset-bottom));
     padding-top:calc(var(--hh) + 8px);
+    position:relative;
+    z-index:1;
   }
-  /* POS - hide desktop invoice panel, show FAB instead */
+  /* POS - full width drug grid, hide desktop cart */
   .pos-wrap{grid-template-columns:1fr!important;gap:10px}
-  .pos-right{display:none!important}
+  .pos-r{display:none!important}
   #mob-cart-fab{display:flex}
-  /* Drug grid */
+  /* Drug grid 2 cols */
   .dgrid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
   .dcard{padding:8px 6px!important}
   .dcard-img{height:64px!important}
   .dcard-name{font-size:11px!important}
   .dcard-price{font-size:12px!important}
-  /* Layout fixes */
+  /* Layouts */
   .sg{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
   .g2{grid-template-columns:1fr!important}
   .fr,.fr3,.fr4{flex-direction:column!important;gap:8px!important}
-  /* Tables */
+  /* Tables horizontal scroll */
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .tw table{min-width:520px;font-size:12px}
-  /* Modals - bottom sheet */
+  .tw th,.tw td{white-space:nowrap}
+  /* Modals bottom sheet */
   .mover{align-items:flex-end!important;padding:0!important}
   .modal{border-radius:20px 20px 0 0!important;max-height:94dvh!important;width:100%!important;max-width:100%!important;margin:0!important}
-  .mb{max-height:calc(94dvh - 120px)!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  /* Input sizes to prevent iOS zoom */
+  .mb{max-height:calc(94dvh - 130px)!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* Prevent iOS input zoom */
   input,select,textarea{font-size:16px!important}
   .btn{min-height:44px}
   .btn-sm{min-height:38px!important;font-size:12px!important}
-  /* Typography */
   h2{font-size:17px!important}
   .hide-mob{display:none!important}
   .hdate{display:none!important}
   .htitle small{display:none}
-  /* Notifs */
   #notifs{bottom:calc(68px + env(safe-area-inset-bottom))!important;right:10px!important;left:10px;max-width:none}
   #sync-dot{display:flex}
-  /* Stats */
   .tnav{flex-wrap:wrap!important;gap:4px!important}
   .tb{font-size:11px!important;padding:6px 10px!important}
-  /* Login */
   #login-screen{align-items:flex-start;padding-top:40px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  /* Charts */
   canvas{max-height:180px!important}
-  /* Settings */
   #page-settings .g2{grid-template-columns:1fr!important}
   .combo-split{grid-template-columns:1fr!important}
+  .pos-l{overflow:visible!important}
 }
 @media(max-width:400px){
   .sg{grid-template-columns:1fr!important}
@@ -1403,8 +1402,11 @@ async function enterApp(user){
   document.getElementById('s-avatar').textContent=(storeName[0]||'U').toUpperCase();
   document.getElementById('s-email').textContent=user.email||'';
   await loadUserCloud(user.id);
-  // Show app
-  document.getElementById('login-screen').style.display='none';
+  // Ẩn login, hiện app
+  const ls=document.getElementById('login-screen');
+  ls.style.display='none';
+  ls.style.pointerEvents='none';
+  ls.style.zIndex='-1';
   document.getElementById('sname').textContent=DB.settings.name||storeName;
   document.getElementById('his-from').value=todayS().slice(0,7)+'-01';
   document.getElementById('his-to').value=todayS();
@@ -1423,7 +1425,10 @@ async function doLogout(){
   if(SUPA_CLIENT)await SUPA_CLIENT.auth.signOut().catch(()=>{});
   CURRENT_USER=null;
   localStorage.removeItem(SESSION_KEY);
-  document.getElementById('login-screen').style.display='flex';
+  const ls=document.getElementById('login-screen');
+  ls.style.display='flex';
+  ls.style.pointerEvents='auto';
+  ls.style.zIndex='9999';
   document.getElementById('l-email').value='';
   document.getElementById('l-pass').value='';
   const e=document.getElementById('l-err');if(e)e.classList.remove('show');
