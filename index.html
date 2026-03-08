@@ -2412,7 +2412,7 @@ async function callAI(prompt,maxTokens=400){
       'X-Title':'PharmaCare Pro'
     },
     body:JSON.stringify({
-      model:'mistralai/mistral-7b-instruct:free',
+      model:'openrouter/auto',
       max_tokens:maxTokens,
       messages:[{role:'user',content:prompt}]
     })
