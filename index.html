@@ -807,9 +807,9 @@ tbody tr:hover{background:#fafbfc}
               </label>
             </div>
             <div class="fg" style="margin-bottom:8px">
-              <label class="fl">Anthropic API Key <a href="https://console.anthropic.com/keys" target="_blank" style="font-size:10px;color:var(--p);font-weight:400;margin-left:6px"><i class="fa fa-external-link"></i> Lấy key</a></label>
+              <label class="fl">Google Gemini API Key <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:10px;color:var(--p);font-weight:400;margin-left:6px"><i class="fa fa-external-link"></i> Lấy key miễn phí</a></label>
               <div style="display:flex;gap:6px">
-                <input type="password" class="fc" id="s-ai-key" placeholder="sk-ant-api03-..." style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px" autocomplete="off">
+                <input type="password" class="fc" id="s-ai-key" placeholder="AIzaSy..." style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px" autocomplete="off">
                 <button class="btn btn-p btn-sm" onclick="saveAiKey()" style="flex-shrink:0"><i class="fa fa-save"></i> Lưu</button>
               </div>
             </div>
@@ -1260,19 +1260,37 @@ function initSample(){
     {id:309,name:'Calcium D3 600mg',ingredient:'Calcium + D3',unit:'Viên',category:'Vitamin & Khoáng chất',barcode:'8936010290099',buyPrice:4000,sellPrice:7000,stock:75,expiry:fd(ad(T,600)),supplierId:103,lot:'LOT2024009',description:'Bổ sung canxi',note:'',img:imgs['Calcium D3']},
     {id:310,name:'Betadine 10%',ingredient:'Povidone Iodine',unit:'Chai',category:'Sát trùng - Ngoài da',barcode:'8936010300107',buyPrice:25000,sellPrice:45000,stock:8,expiry:fd(ad(T,730)),supplierId:102,lot:'LOT2024010',description:'Sát trùng vết thương',note:'',img:imgs['Betadine']},
   ];
-  // Sample invoices 7 days
+  // Sample invoices - CỐ ĐỊNH, không random
   DB.invoices=[];
-  for(let i=6;i>=0;i--){
-    const d=ad(T,-i),ds=fd(d),cnt=2+Math.floor(Math.random()*4);
-    for(let j=0;j<cnt;j++){
-      const dr1=DB.drugs[Math.floor(Math.random()*DB.drugs.length)];
-      const dr2=DB.drugs[Math.floor(Math.random()*DB.drugs.length)];
-      const q1=1+Math.floor(Math.random()*4),q2=1+Math.floor(Math.random()*3);
+  // Dữ liệu mẫu cố định cho 7 ngày (thuốc chỉ số: 0=Paracetamol,1=Amoxicillin,2=VitaminC,3=Omeprazole,4=Atorvastatin,5=Metformin,6=Cetirizine,7=Ibuprofen,8=Calcium,9=Betadine)
+  const SAMPLE_INV=[
+    // 6 ngày trước
+    {offset:6,orders:[[0,3,2,1],[7,2,8,1]]},
+    // 5 ngày trước
+    {offset:5,orders:[[1,1,2,2],[4,1,6,2],[0,5,3,1]]},
+    // 4 ngày trước
+    {offset:4,orders:[[2,3,7,2],[9,1,0,4]]},
+    // 3 ngày trước
+    {offset:3,orders:[[0,2,6,1],[1,2,8,2],[4,1,2,1]]},
+    // 2 ngày trước
+    {offset:2,orders:[[3,2,0,3],[7,1,2,2],[9,1,5,1],[6,2,1,1]]},
+    // hôm qua
+    {offset:1,orders:[[0,4,2,2],[1,1,4,1],[8,3,3,2]]},
+    // hôm nay
+    {offset:0,orders:[[2,2,0,3],[6,1,7,2],[1,2,9,1]]}
+  ];
+  const TIMES=['08:15','09:30','10:45','11:20','13:10','14:35','15:50','16:25','17:40'];
+  SAMPLE_INV.forEach(day=>{
+    const ds=fd(ad(T,-day.offset));
+    day.orders.forEach((order,j)=>{
+      const dr1=DB.drugs[order[0]],dr2=DB.drugs[order[2]];
+      const q1=order[1],q2=order[3];
       const tot=dr1.sellPrice*q1+dr2.sellPrice*q2;
       const code='HD'+ds.replace(/-/g,'')+(j+1).toString().padStart(3,'0');
-      DB.invoices.push({id:DB.id(),code,date:ds,time:`${8+Math.floor(Math.random()*10)}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}`,customerName:'Khách vãng lai',customerPhone:'',customerId:null,items:[{drugId:dr1.id,drugName:dr1.name,unit:dr1.unit,qty:q1,sellPrice:dr1.sellPrice,total:dr1.sellPrice*q1},{drugId:dr2.id,drugName:dr2.name,unit:dr2.unit,qty:q2,sellPrice:dr2.sellPrice,total:dr2.sellPrice*q2}],subtotal:tot,discount:0,total:tot,payMethod:'cash'});
-    }
-  }
+      const pm=['cash','cash','transfer','cash','cash','combo:50000:0'][j%6]||'cash';
+      DB.invoices.push({id:DB.id(),code,date:ds,time:TIMES[(day.offset*3+j)%TIMES.length],customerName:'Khách vãng lai',customerPhone:'',customerId:null,items:[{drugId:dr1.id,drugName:dr1.name,unit:dr1.unit,qty:q1,sellPrice:dr1.sellPrice,total:dr1.sellPrice*q1},{drugId:dr2.id,drugName:dr2.name,unit:dr2.unit,qty:q2,sellPrice:dr2.sellPrice,total:dr2.sellPrice*q2}],subtotal:tot,discount:0,total:tot,payMethod:pm});
+    });
+  });
   DB.settings={name:'Nhà Thuốc An Khang',address:'123 Nguyễn Trãi, Q.5, TP.HCM',phone:'028 3838 3838',email:'info@ankhang.vn',thanks:'Cảm ơn quý khách! Chúc sức khỏe!',lowStock:10,bank:'Vietcombank',account:'0011004558999',owner:'NGUYEN VAN AN',categories:[...DEFAULT_CATS]};
 }
 
@@ -2176,12 +2194,12 @@ function saveAiToggle(val){
 function saveAiKey(){
   const k=document.getElementById('s-ai-key').value.trim();
   if(!k){notify('Nhập API key!','e');return;}
-  if(!k.startsWith('sk-ant-')){notify('API key không đúng định dạng (phải bắt đầu bằng sk-ant-)','e');return;}
+  if(!k.startsWith('AIza')){notify('Key không đúng định dạng Gemini (phải bắt đầu bằng AIza...)','e');return;}
   setAiKey(k);
   document.getElementById('s-ai-key').value='';
   const status=document.getElementById('ai-key-status');
-  status.innerHTML=`<i class="fa fa-check-circle" style="color:var(--p2)"></i> Key đã lưu: <span style="font-family:monospace">${k.slice(0,12)}...${k.slice(-4)}</span>`;
-  notify('Đã lưu API key!','s');
+  status.innerHTML=`<i class="fa fa-check-circle" style="color:var(--p2)"></i> Gemini key đã lưu: <span style="font-family:monospace">${k.slice(0,10)}...${k.slice(-4)}</span>`;
+  notify('Đã lưu Gemini API key!','s');
 }
 
 // ============================================================
@@ -2385,23 +2403,17 @@ function setAiKey(k){localStorage.setItem('pc_aikey',k.trim());}
 async function callAI(prompt,maxTokens=400){
   const apiKey=getAiKey();
   if(!apiKey)throw new Error('NO_KEY');
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+  const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':apiKey,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
+    headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-      model:'claude-haiku-4-5-20251001',
-      max_tokens:maxTokens,
-      messages:[{role:'user',content:prompt}]
+      contents:[{parts:[{text:prompt}]}],
+      generationConfig:{maxOutputTokens:maxTokens,temperature:0.4}
     })
   });
   const data=await resp.json();
-  if(data.error)throw new Error(data.error.message||'API error');
-  return(data.content?.[0]?.text||'').trim();
+  if(data.error)throw new Error(data.error.message||'Gemini API error');
+  return(data.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
 }
 
 // ============================================================
@@ -2418,7 +2430,7 @@ async function showPosAiSuggest(drug){
   const cacheKey=drug.id;
   if(_aiPosCache[cacheKey]){textEl.innerHTML=_aiPosCache[cacheKey];return;}
   if(!getAiKey()){
-    textEl.innerHTML='🔑 Chưa cấu hình API key. Vào <b>Cài đặt → API Key AI</b> để thêm.<br><small style="color:#9f7aea">Lấy key tại console.anthropic.com</small>';
+    textEl.innerHTML='🔑 Chưa có Gemini API key. Vào <b>Cài đặt → API Key AI</b> để thêm.<br><small style="color:#9f7aea">Miễn phí tại aistudio.google.com</small>';
     return;
   }
   try{
@@ -2455,7 +2467,7 @@ async function triggerAiDrugModal(){
   if(_aiModalCache[key]){loading.style.display='none';textEl.style.display='block';textEl.innerHTML=_aiModalCache[key];return;}
   if(!getAiKey()){
     loading.style.display='none';textEl.style.display='block';
-    textEl.innerHTML='🔑 Chưa cấu hình API key. Vào <b>Cài đặt → API Key AI</b>.';
+    textEl.innerHTML='🔑 Chưa có Gemini key. Vào <b>Cài đặt → API Key AI</b>.';
     return;
   }
   try{
