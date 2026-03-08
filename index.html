@@ -374,26 +374,28 @@ tbody tr:hover{background:#fafbfc}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @media(max-width:768px){
   :root{--hh:50px}
-  /* Safari iOS: dùng fixed layout thay vì flex với overflow:hidden */
-  body{flex-direction:column;height:100%;overflow:hidden;position:fixed;width:100%;top:0;left:0}
+  body{flex-direction:column;overflow:hidden;position:fixed;inset:0}
   #sidebar{position:fixed;left:0;top:0;height:100%;width:min(280px,85vw)!important;z-index:150;transform:translateX(-100%);transition:transform .25s ease}
   #sidebar.mob-open{transform:translateX(0)}
   #mob-overlay.show{display:block}
   #mob-ham{display:block}
   #mob-nav{display:block}
-  #hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);z-index:50;background:var(--card);border-bottom:1px solid var(--border)}
+  /* Dùng flex column cho main, KHÔNG dùng position:fixed cho content */
+  #hdr{position:static;flex-shrink:0;height:var(--hh);z-index:10}
   #hdr-search,.hdate,.hide-mob{display:none!important}
   .htitle small{display:none}
-  #main{flex:1;display:block;position:relative}
-  /* Content: fixed position với overflow scroll — cách DUY NHẤT Safari iOS scroll được */
+  #main{
+    position:fixed;inset:0;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
   #content{
-    position:fixed;
-    top:var(--hh);
-    left:0;right:0;
-    bottom:calc(56px + env(safe-area-inset-bottom));
+    flex:1;
     overflow-y:scroll;
     -webkit-overflow-scrolling:touch;
-    padding:8px 10px 16px;
+    padding:8px 10px calc(16px + env(safe-area-inset-bottom));
+    /* QUAN TRỌNG: iOS cần height tường minh để scroll */
+    height:0;
   }
   .pos-wrap{display:block!important}
   .pos-r,.pos-right{display:none!important}
