@@ -1657,13 +1657,6 @@ function updateMobFab(){
   if(badge){badge.textContent=cnt;badge.style.display=cnt>0?'flex':'none';}
   if(totalEl)totalEl.textContent=fmt(total);
 }
-  const badge=document.getElementById('mob-cart-badge');
-  if(badge){
-    const total=CART.reduce((s,i)=>s+i.qty,0);
-    badge.textContent=total;
-    badge.style.display=total>0?'flex':'none';
-  }
-}
 
 // ============================================================
 // DASHBOARD
