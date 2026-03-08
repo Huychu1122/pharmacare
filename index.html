@@ -370,14 +370,17 @@ tbody tr:hover{background:#fafbfc}
   #mob-overlay.show{opacity:1;pointer-events:auto}
   #mob-ham{display:block}
   #mob-nav{display:block}
-  #main{flex:1;min-height:0;flex-direction:column}
-  #hdr{padding:0 12px;gap:8px}
-  #hdr-search{display:none}
+  #main{flex:1;min-height:0;flex-direction:column;overflow:hidden}
   #content{
-    flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-    padding:12px 12px calc(64px + env(safe-area-inset-bottom));
-    padding-top:calc(var(--hh) + 12px)
+    flex:1;overflow-y:scroll!important;-webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain;
+    padding:12px 12px calc(72px + env(safe-area-inset-bottom));
+    padding-top:calc(var(--hh) + 12px);
+    height:calc(100dvh - var(--hh));
+    box-sizing:border-box;
   }
+  /* Login screen scrollable on small phones */
+  #login-screen{align-items:flex-start;padding-top:40px;overflow-y:scroll!important;-webkit-overflow-scrolling:touch!important}
   /* Cards & grids */
   .sg{grid-template-columns:repeat(2,1fr)!important;gap:10px}
   .sc{padding:12px 14px;gap:10px}
@@ -520,38 +523,25 @@ tbody tr:hover{background:#fafbfc}
       <h1>PharmaCare Pro</h1>
       <p>Phần mềm quản lý nhà thuốc</p>
     </div>
-    <!-- Step 1: Supabase config (first time only) -->
-    <div id="l-step-supa" style="display:none">
-      <div style="background:var(--pl);color:#1e40af;border-radius:10px;padding:12px;font-size:12px;margin-bottom:16px;line-height:1.7">
-        <b>⚙️ Cài đặt lần đầu</b><br>Nhập thông tin Supabase để lưu dữ liệu cloud. Chỉ cần làm 1 lần.
-        <br><a href="https://supabase.com" target="_blank" style="color:var(--p);font-weight:700">→ Tạo tài khoản Supabase miễn phí</a>
-      </div>
-      <div class="fg"><label class="fl">Supabase Project URL</label><input type="url" class="fc" id="ls-url" placeholder="https://abcxyz.supabase.co" style="font-size:14px"></div>
-      <div class="fg" style="margin-bottom:16px"><label class="fl">Anon Public Key</label><input type="password" class="fc" id="ls-key" placeholder="eyJhbGciOiJ..." style="font-family:monospace;font-size:12px"></div>
-      <div class="lerr" id="ls-err"></div>
-      <button class="lbtn" onclick="setupSupabase()"><i class="fa fa-plug"></i> Kết nối & Tiếp tục</button>
+    <div class="ltabs">
+      <button class="ltab active" id="ltab-in" onclick="switchLTab('in')">Đăng nhập</button>
+      <button class="ltab" id="ltab-up" onclick="switchLTab('up')">Đăng ký</button>
     </div>
-    <!-- Step 2: Login / Register -->
-    <div id="l-step-auth" style="display:none">
-      <div class="ltabs">
-        <button class="ltab active" id="ltab-in" onclick="switchLTab('in')">Đăng nhập</button>
-        <button class="ltab" id="ltab-up" onclick="switchLTab('up')">Đăng ký</button>
-      </div>
-      <div class="lerr" id="l-err"></div>
-      <div id="l-reg-name" class="fg" style="display:none;margin-bottom:12px">
-        <label class="fl">Tên nhà thuốc</label>
-        <input type="text" class="fc" id="l-storename" placeholder="Nhà Thuốc ABC">
-      </div>
-      <div class="fg"><label class="fl">Email</label>
-        <input type="email" class="fc" id="l-email" placeholder="email@example.com" autocomplete="email">
-      </div>
-      <div class="fg" style="margin-bottom:16px"><label class="fl">Mật khẩu</label>
-        <input type="password" class="fc" id="l-pass" placeholder="Tối thiểu 6 ký tự" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
-      </div>
-      <div class="lerr" id="l-err2"></div>
-      <button class="lbtn" id="l-auth-btn" onclick="doAuth()"><i class="fa fa-right-to-bracket"></i> Đăng nhập</button>
-      <div class="lload" id="l-load"><span class="lspin">⟳</span> Đang xử lý...</div>
+    <div class="lerr" id="l-err"></div>
+    <div id="l-reg-name" class="fg" style="display:none;margin-bottom:12px">
+      <label class="fl">Tên nhà thuốc</label>
+      <input type="text" class="fc" id="l-storename" placeholder="Nhà Thuốc ABC">
     </div>
+    <div class="fg">
+      <label class="fl">Email</label>
+      <input type="email" class="fc" id="l-email" placeholder="email@example.com" autocomplete="email">
+    </div>
+    <div class="fg" style="margin-bottom:18px">
+      <label class="fl">Mật khẩu</label>
+      <input type="password" class="fc" id="l-pass" placeholder="Tối thiểu 6 ký tự" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
+    </div>
+    <button class="lbtn" id="l-auth-btn" onclick="doAuth()"><i class="fa fa-right-to-bracket"></i> Đăng nhập</button>
+    <div class="lload" id="l-load"><span class="lspin">⟳</span> Đang xử lý...</div>
   </div>
 </div>
 
@@ -1261,12 +1251,23 @@ on conflict do nothing;</div>
 // SUPABASE CLOUD SYNC
 // ============================================================
 // ============================================================
-// AUTH + SUPABASE (user-scoped, auto-session 24h)
+// SUPABASE — hard-coded, không cần người dùng nhập
 // ============================================================
+const SUPA_URL='https://jvzhkhmkyrushgyslsir.supabase.co';
+const SUPA_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2emhraG1reXJ1c2hneXNsc2lyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTEwNjcsImV4cCI6MjA4ODQ4NzA2N30.nU1Se57WJrH6NoHzTiXjsb2zCxI3XB9OYMxoUGYdlns';
+
 let SUPA_CLIENT=null;
 let CURRENT_USER=null;
 const SESSION_KEY='pc_session';
 const SESSION_TTL=24*60*60*1000;
+
+function initSupabase(){
+  try{
+    SUPA_CLIENT=window.supabase.createClient(SUPA_URL,SUPA_ANON,{
+      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
+    });
+  }catch(e){console.error('Supabase init error',e);}
+}
 
 function setSyncState(s){
   const dot=document.getElementById('sync-dot'),txt=document.getElementById('sync-txt');
@@ -1276,49 +1277,30 @@ function setSyncState(s){
   else{if(txt)txt.textContent='Đã lưu';}
 }
 
-function createSupaClient(url,key){
-  try{
-    return window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-  }catch(e){return null;}
-}
-
-// ── LOGIN UI HELPERS ──
-function showLErr(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.classList.add('show');}}
-function hideLErr(id){const el=document.getElementById(id);if(el)el.classList.remove('show');}
+// ── LOGIN UI ──
 function switchLTab(tab){
   document.getElementById('ltab-in').classList.toggle('active',tab==='in');
   document.getElementById('ltab-up').classList.toggle('active',tab==='up');
   document.getElementById('l-reg-name').style.display=tab==='up'?'':'none';
-  document.getElementById('l-auth-btn').innerHTML=tab==='up'?'<i class="fa fa-user-plus"></i> Đăng ký':'<i class="fa fa-right-to-bracket"></i> Đăng nhập';
-  hideLErr('l-err');hideLErr('l-err2');
+  document.getElementById('l-auth-btn').innerHTML=tab==='up'
+    ?'<i class="fa fa-user-plus"></i> Đăng ký'
+    :'<i class="fa fa-right-to-bracket"></i> Đăng nhập';
+  const e=document.getElementById('l-err');if(e)e.classList.remove('show');
 }
 
-// ── STEP 1: Save Supabase config ──
-async function setupSupabase(){
-  const url=document.getElementById('ls-url').value.trim();
-  const key=document.getElementById('ls-key').value.trim();
-  hideLErr('ls-err');
-  if(!url||!key){showLErr('ls-err','Vui lòng nhập đủ URL và Key!');return;}
-  if(!url.includes('supabase.co')){showLErr('ls-err','URL không đúng, phải chứa supabase.co');return;}
-  const client=createSupaClient(url,key);
-  if(!client){showLErr('ls-err','Không thể kết nối Supabase!');return;}
-  // Test connection
-  const {error}=await client.from('pharmacare_data').select('id').limit(1);
-  if(error&&error.code!=='PGRST116'){showLErr('ls-err','Kết nối thất bại: '+error.message+'\nHãy chạy SQL setup trước!');return;}
-  localStorage.setItem('supa_url',url);localStorage.setItem('supa_key',key);
-  SUPA_CLIENT=client;
-  document.getElementById('l-step-supa').style.display='none';
-  document.getElementById('l-step-auth').style.display='';
+function showLErr(msg){
+  const el=document.getElementById('l-err');
+  if(el){el.textContent=msg;el.classList.add('show');}
 }
 
-// ── STEP 2: Login / Register ──
 async function doAuth(){
   const isReg=document.getElementById('ltab-up').classList.contains('active');
   const email=document.getElementById('l-email').value.trim();
   const pass=document.getElementById('l-pass').value;
-  hideLErr('l-err');hideLErr('l-err2');
-  if(!email||!pass){showLErr('l-err','Nhập email và mật khẩu!');return;}
-  if(pass.length<6){showLErr('l-err','Mật khẩu tối thiểu 6 ký tự!');return;}
+  const errEl=document.getElementById('l-err');
+  if(errEl)errEl.classList.remove('show');
+  if(!email||!pass){showLErr('Nhập email và mật khẩu!');return;}
+  if(pass.length<6){showLErr('Mật khẩu tối thiểu 6 ký tự!');return;}
   document.getElementById('l-auth-btn').style.display='none';
   document.getElementById('l-load').style.display='block';
   try{
@@ -1330,31 +1312,33 @@ async function doAuth(){
       if(res.data.user&&!res.data.session){
         document.getElementById('l-load').style.display='none';
         document.getElementById('l-auth-btn').style.display='block';
-        showLErr('l-err','📧 Kiểm tra email để xác nhận tài khoản, sau đó đăng nhập!');return;
+        showLErr('📧 Kiểm tra email để xác nhận tài khoản, rồi đăng nhập!');
+        return;
       }
     }else{
       res=await SUPA_CLIENT.auth.signInWithPassword({email,password:pass});
       if(res.error)throw res.error;
     }
     const user=res.data.session?.user||res.data.user;
-    localStorage.setItem(SESSION_KEY,JSON.stringify({uid:user.id,email:user.email,meta:user.user_metadata,time:Date.now()}));
+    localStorage.setItem(SESSION_KEY,JSON.stringify({uid:user.id,time:Date.now()}));
     await enterApp(user);
   }catch(e){
     document.getElementById('l-load').style.display='none';
     document.getElementById('l-auth-btn').style.display='block';
     const m=e.message||'';
-    showLErr('l-err',m.includes('Invalid')||m.includes('credentials')?'Email hoặc mật khẩu không đúng!':m.includes('already')?'Email đã tồn tại!':m||'Đăng nhập thất bại!');
+    showLErr(
+      m.includes('Invalid')||m.includes('credentials')?'Email hoặc mật khẩu không đúng!':
+      m.includes('already')?'Email đã tồn tại!':
+      m||'Đăng nhập thất bại!'
+    );
   }
 }
 
-// ── Enter app after login ──
 async function enterApp(user){
   CURRENT_USER=user;
   const storeName=user.user_metadata?.store_name||user.email?.split('@')[0]||'Nhà Thuốc';
-  // Update UI
   document.getElementById('s-avatar').textContent=(storeName[0]||'U').toUpperCase();
   document.getElementById('s-email').textContent=user.email||'';
-  // Load user data from cloud
   await loadUserCloud(user.id);
   // Show app
   document.getElementById('login-screen').style.display='none';
@@ -1363,14 +1347,13 @@ async function enterApp(user){
   document.getElementById('his-to').value=todayS();
   renderDash();updateAlerts();
   setSyncState('ok');
-  startSessionTimer();
-}
-
-function startSessionTimer(){
+  // 24h session check
   setInterval(()=>{
     const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}');
     if(s.time&&Date.now()-s.time>SESSION_TTL)doLogout();
   },60000);
+  // Auto-sync every 60s
+  setInterval(()=>{if(SUPA_CLIENT&&CURRENT_USER)saveUserCloud(CURRENT_USER.id);},60000);
 }
 
 async function doLogout(){
@@ -1380,11 +1363,12 @@ async function doLogout(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('l-email').value='';
   document.getElementById('l-pass').value='';
-  hideLErr('l-err');hideLErr('l-err2');
+  const e=document.getElementById('l-err');if(e)e.classList.remove('show');
+  document.getElementById('l-auth-btn').style.display='block';
+  document.getElementById('l-load').style.display='none';
   notify('Đã đăng xuất!','s');
 }
 
-// ── Per-user cloud data ──
 async function loadUserCloud(uid){
   if(!SUPA_CLIENT||!uid){if(!DB.load())initSample();return;}
   setSyncState('syncing');
@@ -1415,24 +1399,13 @@ async function saveUserCloud(uid){
   }catch(e){setSyncState('error');}
 }
 
-// Compat: old saveSupaConfig in settings modal
+// Settings modal compat
 async function saveSupaConfig(){
-  const url=document.getElementById('supa-url').value.trim();
-  const key=document.getElementById('supa-key').value.trim();
-  if(!url||!key){notify('Nhập đủ URL và Key!','e');return;}
-  const client=createSupaClient(url,key);
-  if(!client){notify('Không thể kết nối!','e');return;}
-  localStorage.setItem('supa_url',url);localStorage.setItem('supa_key',key);
-  SUPA_CLIENT=client;
-  if(CURRENT_USER)await saveUserCloud(CURRENT_USER.id);
   closeM('m-supabase');
-  notify('✓ Đã cập nhật kết nối cloud!','s');
-  document.getElementById('supa-btn-txt').textContent='✓ Đã kết nối';
-  document.getElementById('supa-connect-btn').style.background='var(--p2)';
+  notify('Supabase đã được tích hợp sẵn!','s');
 }
-
 function copySQL(){
-  const sql=`-- Chạy trong Supabase SQL Editor\ncreate table if not exists pharmacare_data (\n  id text primary key,\n  data jsonb,\n  updated_at timestamptz default now()\n);\nalter table pharmacare_data enable row level security;\ncreate policy "own_data" on pharmacare_data\n  for all using (auth.uid()::text = id) with check (auth.uid()::text = id);`;
+  const sql=`create table if not exists pharmacare_data (\n  id text primary key,\n  data jsonb,\n  updated_at timestamptz default now()\n);\nalter table pharmacare_data enable row level security;\ncreate policy "own_data" on pharmacare_data\n  for all using (auth.uid()::text = id)\n  with check (auth.uid()::text = id);`;
   navigator.clipboard.writeText(sql).then(()=>notify('Đã copy SQL!','s'));
 }
 
@@ -2756,45 +2729,43 @@ document.addEventListener('keydown',e=>{
 function tick(){document.getElementById('hdate').textContent=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})+' | '+new Date().toLocaleDateString('vi-VN');}
 
 // ============================================================
-// STARTUP — check session, show login or app
+// STARTUP
 // ============================================================
 (async function startup(){
-  // 1. Load Supabase config from localStorage
-  const url=localStorage.getItem('supa_url');
-  const key=localStorage.getItem('supa_key');
-  if(url&&key){
-    SUPA_CLIENT=createSupaClient(url,key);
+  // Init Supabase (hard-coded credentials)
+  initSupabase();
+  setInterval(tick,1000);tick();
+
+  if(!SUPA_CLIENT){
+    // Fallback: just load local data and show app without login
+    if(!DB.load())initSample();
+    if(!DB.settings.categories)DB.settings.categories=[...DEFAULT_CATS];
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('sname').textContent=DB.settings.name||'Nhà Thuốc';
+    document.getElementById('his-from').value=todayS().slice(0,7)+'-01';
+    document.getElementById('his-to').value=todayS();
+    renderDash();updateAlerts();
+    return;
   }
 
-  // 2. Check saved session (within 24h)
-  const sessionRaw=localStorage.getItem(SESSION_KEY);
-  if(sessionRaw&&SUPA_CLIENT){
-    try{
-      const saved=JSON.parse(sessionRaw);
-      if(saved.time&&Date.now()-saved.time<SESSION_TTL){
-        // Try to restore Supabase auth session
-        const {data:{session}}=await SUPA_CLIENT.auth.getSession();
-        if(session?.user){
-          await enterApp(session.user);
-          setInterval(()=>{if(SUPA_CLIENT&&CURRENT_USER)saveUserCloud(CURRENT_USER.id);},60000);
-          return;
-        }
-      }
-    }catch(e){}
+  // Try restore existing Supabase session (auto-login)
+  const {data:{session}}=await SUPA_CLIENT.auth.getSession();
+  if(session?.user){
+    // Check 24h TTL
+    const saved=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}');
+    if(!saved.time||Date.now()-saved.time<SESSION_TTL){
+      // Refresh session time
+      localStorage.setItem(SESSION_KEY,JSON.stringify({uid:session.user.id,time:saved.time||Date.now()}));
+      await enterApp(session.user);
+      return;
+    }
+    // Expired — logout silently
+    await SUPA_CLIENT.auth.signOut().catch(()=>{});
     localStorage.removeItem(SESSION_KEY);
   }
 
-  // 3. Show login screen
-  if(!SUPA_CLIENT){
-    // First time: show Supabase config step
-    document.getElementById('l-step-supa').style.display='';
-    document.getElementById('l-step-auth').style.display='none';
-  }else{
-    document.getElementById('l-step-supa').style.display='none';
-    document.getElementById('l-step-auth').style.display='';
-  }
+  // Show login screen
   document.getElementById('login-screen').style.display='flex';
-  setInterval(tick,1000);tick();
 })();
 </script>
 </body>
