@@ -345,101 +345,131 @@ tbody tr:hover{background:#fafbfc}
 @media(max-width:960px){.pos-wrap{grid-template-columns:1fr;height:auto}}
 @media print{#sidebar,#hdr,#notifs,.no-print{display:none!important}body{background:#fff}#content{padding:0}.inv-print{border:none;max-width:100%}}
 
-/* ===== MOBILE / RESPONSIVE ===== */
-/* Bottom nav for mobile */
-#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--side);border-top:1px solid rgba(255,255,255,.08);z-index:200;padding-bottom:env(safe-area-inset-bottom)}
-.mob-nav-items{display:flex;align-items:stretch}
-.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 6px;color:rgba(255,255,255,.5);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;cursor:pointer;border:none;background:none;gap:4px;transition:.15s;-webkit-tap-highlight-color:transparent}
-.mob-nav-item i{font-size:18px}
-.mob-nav-item.active,.mob-nav-item:active{color:var(--p)}
-/* Mobile overlay for sidebar */
-#mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:149;backdrop-filter:blur(2px)}
-/* Hamburger */
+/* ===== MOBILE NAV ===== */
+#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#0d1b2a;border-top:1px solid rgba(255,255,255,.1);z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+.mob-nav-items{display:flex;align-items:stretch;height:58px}
+.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 2px;color:rgba(255,255,255,.4);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;cursor:pointer;border:none;background:none;gap:3px;-webkit-tap-highlight-color:transparent;position:relative;transition:color .15s}
+.mob-nav-item i{font-size:21px}
+.mob-nav-item.active{color:#4f8ef7}
+
+/* More drawer */
+#mob-more-overlay{display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.55);backdrop-filter:blur(3px)}
+#mob-more-overlay.show{display:block}
+#mob-more-drawer{position:fixed;bottom:0;left:0;right:0;background:#162538;border-radius:22px 22px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -8px 40px rgba(0,0,0,.5)}
+#mob-more-drawer.open{transform:translateY(0)}
+.mob-drawer-bar{width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:99px;margin:14px auto 8px}
+.mob-drawer-grid{display:grid;grid-template-columns:repeat(4,1fr);padding:4px 0 20px}
+.mob-drawer-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 6px 12px;color:rgba(255,255,255,.8);font-size:11px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:14px;margin:4px;transition:background .12s}
+.mob-drawer-item:active{background:rgba(79,142,247,.15)}
+.mob-drawer-item i{font-size:26px;color:#4f8ef7}
+
+/* Mobile sidebar overlay */
+#mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:149}
 #mob-ham{display:none;background:none;border:none;color:#fff;font-size:20px;padding:10px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* ===== CART FAB (POS only) ===== */
+#mob-cart-fab{
+  display:none;position:fixed;
+  bottom:calc(70px + env(safe-area-inset-bottom));right:14px;
+  z-index:91;
+  background:linear-gradient(135deg,#1d6fe8 0%,#7c3aed 100%);
+  color:#fff;border:none;border-radius:22px;
+  min-width:60px;height:56px;padding:0 16px 0 12px;
+  font-weight:700;box-shadow:0 6px 24px rgba(29,111,232,.5);
+  align-items:center;justify-content:center;gap:8px;
+  -webkit-tap-highlight-color:transparent;cursor:pointer;
+  transition:transform .12s,box-shadow .12s;
+}
+#mob-cart-fab:active{transform:scale(.95);box-shadow:0 3px 12px rgba(29,111,232,.4)}
+#mob-cart-fab .fab-icon{position:relative;font-size:22px}
+#mob-cart-fab .fab-badge{
+  position:absolute;top:-7px;right:-7px;
+  background:#ef4444;color:#fff;border-radius:99px;
+  min-width:18px;height:18px;font-size:10px;font-weight:800;
+  display:none;align-items:center;justify-content:center;padding:0 4px;
+  border:2px solid #fff
+}
+#mob-cart-fab .fab-info{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
+#mob-cart-fab .fab-total{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace}
+#mob-cart-fab .fab-lbl{font-size:9px;opacity:.75;text-transform:uppercase;letter-spacing:.5px}
+
+/* Old cart btn - hide */
+#mob-cart-btn{display:none!important}
 
 @media(max-width:768px){
   :root{--hh:52px}
-  body{flex-direction:column}
-  #sidebar{
-    position:fixed;left:0;top:0;bottom:0;z-index:150;
-    transform:translateX(-100%);transition:transform .25s ease;
-    width:min(280px,85vw)!important;height:100dvh
-  }
+  body{flex-direction:column;overflow:hidden;height:100dvh}
+  #sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%);transition:transform .25s ease;width:min(280px,85vw)!important;height:100dvh}
   #sidebar.mob-open{transform:translateX(0)}
   #mob-overlay{display:block;opacity:0;pointer-events:none;transition:opacity .25s}
   #mob-overlay.show{opacity:1;pointer-events:auto}
   #mob-ham{display:block}
   #mob-nav{display:block}
-  #main{flex:1;min-height:0;flex-direction:column;overflow:hidden}
+  #main{flex:1;display:flex;flex-direction:column;overflow:hidden;height:100dvh}
+  #hdr{flex-shrink:0;height:var(--hh)}
+  #hdr-search{display:none}
   #content{
-    flex:1;overflow-y:scroll!important;-webkit-overflow-scrolling:touch!important;
-    overscroll-behavior:contain;
-    padding:12px 12px calc(72px + env(safe-area-inset-bottom));
-    padding-top:calc(var(--hh) + 12px);
-    height:calc(100dvh - var(--hh));
-    box-sizing:border-box;
+    flex:1;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    padding:8px 10px calc(66px + env(safe-area-inset-bottom));
+    padding-top:calc(var(--hh) + 8px);
   }
-  /* Login screen scrollable on small phones */
-  #login-screen{align-items:flex-start;padding-top:40px;overflow-y:scroll!important;-webkit-overflow-scrolling:touch!important}
-  /* Cards & grids */
-  .sg{grid-template-columns:repeat(2,1fr)!important;gap:10px}
-  .sc{padding:12px 14px;gap:10px}
-  .sc-ico{width:36px;height:36px;font-size:15px}
-  .sc-val{font-size:18px}
+  /* POS - hide desktop invoice panel, show FAB instead */
+  .pos-wrap{grid-template-columns:1fr!important;gap:10px}
+  .pos-right{display:none!important}
+  #mob-cart-fab{display:flex}
+  /* Drug grid */
+  .dgrid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  .dcard{padding:8px 6px!important}
+  .dcard-img{height:64px!important}
+  .dcard-name{font-size:11px!important}
+  .dcard-price{font-size:12px!important}
+  /* Layout fixes */
+  .sg{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
   .g2{grid-template-columns:1fr!important}
-  .fr{flex-direction:column;gap:8px}
-  .fr>.fg{flex:1}
-  /* Tables - horizontal scroll */
+  .fr,.fr3,.fr4{flex-direction:column!important;gap:8px!important}
+  /* Tables */
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .tw table{min-width:540px}
-  /* Modal full-screen on mobile */
-  .mover{align-items:flex-end;padding:0}
-  .modal{border-radius:20px 20px 0 0;max-height:92dvh;width:100%!important;max-width:100%!important;margin:0}
-  .modal-lg{max-height:94dvh}
-  .mb{max-height:calc(92dvh - 120px);overflow-y:auto;-webkit-overflow-scrolling:touch}
-  /* POS specific */
-  .pos-wrap{grid-template-columns:1fr;height:auto;gap:12px}
-  .pos-right{position:fixed;bottom:calc(56px + env(safe-area-inset-bottom));right:0;left:0;z-index:90;background:#fff;border-top:2px solid var(--border);border-radius:16px 16px 0 0;max-height:52vh;overflow-y:auto;box-shadow:0 -4px 20px rgba(0,0,0,.1);padding:12px}
-  .pos-right.mob-cart-open{max-height:78vh}
-  /* Cart toggle button */
-  #mob-cart-btn{display:flex}
-  /* Dgrid 2 columns on mobile */
-  .dgrid{grid-template-columns:repeat(2,1fr)!important;gap:8px}
-  .dcard{padding:10px 8px;font-size:12px}
-  .dcard-img{height:70px}
+  .tw table{min-width:520px;font-size:12px}
+  /* Modals - bottom sheet */
+  .mover{align-items:flex-end!important;padding:0!important}
+  .modal{border-radius:20px 20px 0 0!important;max-height:94dvh!important;width:100%!important;max-width:100%!important;margin:0!important}
+  .mb{max-height:calc(94dvh - 120px)!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* Input sizes to prevent iOS zoom */
+  input,select,textarea{font-size:16px!important}
+  .btn{min-height:44px}
+  .btn-sm{min-height:38px!important;font-size:12px!important}
   /* Typography */
   h2{font-size:17px!important}
-  .card{border-radius:12px}
-  /* Hide some desktop elements */
   .hide-mob{display:none!important}
-  /* Input touch targets */
-  .fc,.btn{min-height:40px}
-  .btn-sm{min-height:34px}
-  /* Notifs position */
-  #notifs{bottom:calc(68px + env(safe-area-inset-bottom));right:12px}
-  /* Supabase sync indicator */
+  .hdate{display:none!important}
+  .htitle small{display:none}
+  /* Notifs */
+  #notifs{bottom:calc(68px + env(safe-area-inset-bottom))!important;right:10px!important;left:10px;max-width:none}
   #sync-dot{display:flex}
+  /* Stats */
+  .tnav{flex-wrap:wrap!important;gap:4px!important}
+  .tb{font-size:11px!important;padding:6px 10px!important}
+  /* Login */
+  #login-screen{align-items:flex-start;padding-top:40px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* Charts */
+  canvas{max-height:180px!important}
+  /* Settings */
+  #page-settings .g2{grid-template-columns:1fr!important}
+  .combo-split{grid-template-columns:1fr!important}
 }
-
 @media(max-width:400px){
   .sg{grid-template-columns:1fr!important}
-  .dgrid{grid-template-columns:repeat(2,1fr)!important}
 }
 
 /* Sync indicator */
-#sync-dot{display:none;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.6);margin-left:auto;margin-right:12px;flex-shrink:0}
+#sync-dot{display:none;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.6);margin-left:auto;margin-right:10px;flex-shrink:0}
 #sync-dot .dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0}
 #sync-dot.syncing .dot{background:var(--warn);animation:pulse 1s infinite}
 #sync-dot.error .dot{background:var(--err)}
-
-/* Cart toggle (mobile) */
-#mob-cart-btn{display:none;position:fixed;bottom:calc(58px + env(safe-area-inset-bottom));right:16px;z-index:91;background:var(--p);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:18px;box-shadow:0 4px 16px rgba(29,111,232,.4);align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
-#mob-cart-badge{position:absolute;top:-3px;right:-3px;background:var(--err);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;display:none}
-
-/* Supabase setup modal */
 .supa-setup{background:#fff;border-radius:16px;padding:24px;max-width:480px;margin:auto;box-shadow:var(--shl)}
-.supa-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
-.supa-num{width:26px;height:26px;border-radius:50%;background:var(--p);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* BARCODE LABEL */
@@ -909,14 +939,42 @@ tbody tr:hover{background:#fafbfc}
   </div><!-- /content -->
 </div><!-- /main -->
 
+<!-- Mobile more overlay -->
+<div id="mob-more-overlay" onclick="closeMobMore()"></div>
+<!-- More drawer -->
+<div id="mob-more-drawer">
+  <div class="mob-drawer-bar"></div>
+  <div class="mob-drawer-grid">
+    <div class="mob-drawer-item" onclick="mobNavTo('history')"><i class="fa fa-receipt"></i>Lịch sử</div>
+    <div class="mob-drawer-item" onclick="mobNavTo('drugs')"><i class="fa fa-capsules"></i>Danh sách thuốc</div>
+    <div class="mob-drawer-item" onclick="mobNavTo('customers')"><i class="fa fa-users"></i>Khách hàng</div>
+    <div class="mob-drawer-item" onclick="mobNavTo('suppliers')"><i class="fa fa-building"></i>Nhà cung cấp</div>
+    <div class="mob-drawer-item" onclick="mobNavTo('stats')"><i class="fa fa-bar-chart"></i>Thống kê</div>
+    <div class="mob-drawer-item" onclick="mobNavTo('settings')"><i class="fa fa-gear"></i>Cài đặt</div>
+    <div class="mob-drawer-item" onclick="exportBackup();closeMobMore()"><i class="fa fa-download"></i>Backup</div>
+    <div class="mob-drawer-item" onclick="doLogout()"><i class="fa fa-right-from-bracket"></i>Đăng xuất</div>
+  </div>
+</div>
+
+<!-- Cart FAB (POS page only) -->
+<button id="mob-cart-fab" onclick="mobCartFabClick()">
+  <div class="fab-icon">
+    <i class="fa fa-cart-shopping"></i>
+    <span class="fab-badge" id="mob-fab-badge">0</span>
+  </div>
+  <div class="fab-info">
+    <span class="fab-total" id="mob-fab-total">0đ</span>
+    <span class="fab-lbl">Thanh toán</span>
+  </div>
+</button>
+
 <!-- MOBILE BOTTOM NAV -->
 <nav id="mob-nav">
   <div class="mob-nav-items">
-    <button class="mob-nav-item active" onclick="nav('dashboard')" id="mn-dashboard"><i class="fa fa-home"></i>Tổng quan</button>
-    <button class="mob-nav-item" onclick="nav('pos')" id="mn-pos"><i class="fa fa-cash-register"></i>Bán thuốc</button>
-    <button class="mob-nav-item" onclick="nav('inventory')" id="mn-inventory"><i class="fa fa-boxes-stacked"></i>Kho</button>
-    <button class="mob-nav-item" onclick="nav('history')" id="mn-history"><i class="fa fa-receipt"></i>Lịch sử</button>
-    <button class="mob-nav-item" onclick="nav('settings')" id="mn-settings"><i class="fa fa-gear"></i>Cài đặt</button>
+    <button class="mob-nav-item active" onclick="mobNav('dashboard')" id="mn-dashboard"><i class="fa fa-home"></i>Tổng quan</button>
+    <button class="mob-nav-item" onclick="mobNav('pos')" id="mn-pos"><i class="fa fa-cash-register"></i>Bán thuốc</button>
+    <button class="mob-nav-item" onclick="mobNav('inventory')" id="mn-inventory"><i class="fa fa-warehouse"></i>Kho</button>
+    <button class="mob-nav-item" onclick="openMobMore()" id="mn-more"><i class="fa fa-ellipsis"></i>Thêm</button>
   </div>
 </nav>
 
@@ -1521,7 +1579,7 @@ function nav(page){
   const t=TT[page]||[page,''];
   document.getElementById('htitle').innerHTML=t[0]+(t[1]?`<small>${t[1]}</small>`:'');
   if(page==='dashboard')renderDash();
-  else if(page==='pos'){initPos();updateMobCartBtn();}
+  else if(page==='pos'){initPos();updateMobFab();}
   else if(page==='history')renderHistory();
   else if(page==='inventory')renderInventory();
   else if(page==='drugs')renderDrugs();
@@ -1545,13 +1603,55 @@ function closeMobSidebar(){
   document.getElementById('sidebar').classList.remove('mob-open');
   document.getElementById('mob-overlay').classList.remove('show');
 }
-let MOB_CART_OPEN=false;
-function toggleMobCart(){
-  MOB_CART_OPEN=!MOB_CART_OPEN;
-  const pr=document.querySelector('.pos-right');
-  if(pr)pr.classList.toggle('mob-cart-open',MOB_CART_OPEN);
+let MOB_CART_OPEN=false; // legacy compat
+// ===== MOBILE NAV =====
+function mobNav(page){
+  closeMobMore();
+  nav(page);
+  // Update active tab
+  ['dashboard','pos','inventory'].forEach(p=>{
+    const el=document.getElementById('mn-'+p);
+    if(el)el.classList.toggle('active',p===page);
+  });
+  document.getElementById('mn-more')?.classList.remove('active');
+  // Show/hide cart FAB
+  document.getElementById('mob-cart-fab').style.display=page==='pos'?'flex':'none';
 }
-function updateMobCartBtn(){
+
+function mobNavTo(page){
+  closeMobMore();
+  nav(page);
+  ['dashboard','pos','inventory'].forEach(p=>{
+    document.getElementById('mn-'+p)?.classList.remove('active');
+  });
+  document.getElementById('mn-more')?.classList.add('active');
+  document.getElementById('mob-cart-fab').style.display='none';
+}
+
+function openMobMore(){
+  document.getElementById('mob-more-drawer').classList.add('open');
+  document.getElementById('mob-more-overlay').classList.add('show');
+}
+function closeMobMore(){
+  document.getElementById('mob-more-drawer').classList.remove('open');
+  document.getElementById('mob-more-overlay').classList.remove('show');
+}
+
+function mobCartFabClick(){
+  if(!CART.length){notify('Chưa có thuốc nào trong giỏ!','w');return;}
+  openPay();
+}
+
+function updateMobFab(){
+  const fab=document.getElementById('mob-cart-fab');
+  if(!fab)return;
+  const cnt=CART.reduce((s,i)=>s+i.qty,0);
+  const total=CART.reduce((s,i)=>s+i.total,0);
+  const badge=document.getElementById('mob-fab-badge');
+  const totalEl=document.getElementById('mob-fab-total');
+  if(badge){badge.textContent=cnt;badge.style.display=cnt>0?'flex':'none';}
+  if(totalEl)totalEl.textContent=fmt(total);
+}
   const badge=document.getElementById('mob-cart-badge');
   if(badge){
     const total=CART.reduce((s,i)=>s+i.qty,0);
@@ -1725,9 +1825,9 @@ function calcCart(){
 }
 function renderCart(){
   const c=document.getElementById('inv-items');
-  if(!CART.length){c.innerHTML=`<div class="inv-empty"><i class="fa fa-cart-shopping"></i><p>Chưa có thuốc</p><p style="font-size:11px;margin-top:4px">Click vào thuốc để thêm</p></div>`;calcCart();updateMobCartBtn();return;}
+  if(!CART.length){c.innerHTML=`<div class="inv-empty"><i class="fa fa-cart-shopping"></i><p>Chưa có thuốc</p><p style="font-size:11px;margin-top:4px">Click vào thuốc để thêm</p></div>`;calcCart();updateMobFab();return;}
   c.innerHTML=CART.map(it=>`<div class="inv-it"><div style="flex:1;min-width:0"><div class="inv-iname">${it.drugName}</div><div class="inv-imeta">${it.unit} × ${fmt(it.sellPrice)}</div></div><div class="qc"><button class="qbtn" onclick="chgQty(${it.drugId},-1)">−</button><input class="qinp" type="number" value="${it.qty}" min="1" onchange="setQty(${it.drugId},this.value)"><button class="qbtn" onclick="chgQty(${it.drugId},1)">+</button></div><div class="itotal">${fmt(it.total)}</div><button class="irem" onclick="removeCart(${it.drugId})"><i class="fa fa-times"></i></button></div>`).join('');
-  calcCart();updateMobCartBtn();
+  calcCart();updateMobFab();
 }
 function clearInv(){if(!CART.length)return;if(!confirm('Xóa hóa đơn?'))return;CART=[];document.getElementById('disc').value='0';renderCart();}
 
